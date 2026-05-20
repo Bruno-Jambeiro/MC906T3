@@ -25,11 +25,11 @@ def test_model(model:Model, data_sets):
 def define_models():
     models = []
 
-    modelo_simples = Model("Modelo_Simples", [LayerDense(2, 6), Relu() ,LayerDense(6, 2)], SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    modelo_simples = Model("Modelo_Simples", [LayerDense(2, 6, init="He"), Relu() ,LayerDense(6, 2, init="He")], SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
     #ATENÇÃO, o retorno do modelo está em logits, então a função de perda já inclui a softmax.
     #O resultados podem não estar entre 0 e 1.
     models.append(modelo_simples)
-    modelo_expansivo = Model("Modelo_Expansivo",[FeatureExpansion(), LayerDense(4, 6), Relu(), LayerDense(6, 2)], SoftmaxCrossEntropy(Ridge=2e-6), SGD(learning_rate=0.1))
+    modelo_expansivo = Model("Modelo_Expansivo",[FeatureExpansion(), LayerDense(4, 6, init="He"), Relu(), LayerDense(6, 2, init="He")], SoftmaxCrossEntropy(Ridge=2e-6), SGD(learning_rate=0.1))
 
     models.append(modelo_expansivo)
     return models

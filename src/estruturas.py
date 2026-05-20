@@ -33,7 +33,18 @@ class LayerDense(Layer):
         self.biases = np.zeros((1, output_size))
     def init_weights(self, init):
         if init == "Simple":
-            self.weights = np.random.randn(self.input_size, self.output_size) * 2.0
+            self.weights = np.random.randn(self.input_size, self.output_size) * 0.01
+        elif init == "Xavier":
+            # Inicialização de Xavier (Glorot) - Ideal para ativações como Tanh ou Sigmoid
+            # Variância = 1 / input_size
+            desvio_padrao = np.sqrt(1.0 / self.input_size)
+            self.weights = np.random.randn(self.input_size, self.output_size) * desvio_padrao
+            
+        elif init == "He":
+            # Inicialização de He (Kaiming) - Ideal para ativações ReLU (O CASO DO SEU PROJETO!)
+            # Variância = 2 / input_size
+            desvio_padrao = np.sqrt(2.0 / self.input_size)
+            self.weights = np.random.randn(self.input_size, self.output_size) * desvio_padrao
         else :
             raise NotImplementedError("Modo de inicialização não implementado.")
         
