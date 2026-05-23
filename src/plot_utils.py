@@ -155,3 +155,31 @@ def plot_loss_curve(model, train_losses, test_losses=None, data_name: str = ""):
     plt.savefig(os.path.join(SAVE_DIR,f"Losses_{name}.png"), dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
+
+def plot_accuracy_curve(model, train_accs, test_accs=None, data_name: str = ""):
+    # Plota a curva de acurácia ao longo do treinamento
+    plt.plot(train_accs, label='Train')
+    if test_accs is not None:
+        plt.plot(test_accs, label='Test')
+        
+    # A escala para acurácia é linear, de 0 a 1 (0% a 100%)
+    plt.ylim(bottom=0.0, top=1.05)
+    
+    name = model.name
+    # Habilita os marcadores menores (subdivisões)
+    plt.minorticks_on()
+    
+    # Grid principal e secundário
+    plt.grid(which='major', color='black', linestyle='-', linewidth=0.5, alpha=0.5)
+    plt.grid(which='minor', color='gray', linestyle=':', linewidth=0.5, alpha=0.5)
+    
+    plt.title(f"Acurácia ao longo do treinamento - Modelo {name}")
+    plt.xlabel("Época")
+    plt.ylabel("Acurácia")
+    plt.legend()
+    
+    SAVE_DIR = os.path.join(PLOTS_DIR, data_name)
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    plt.savefig(os.path.join(SAVE_DIR, f"Accuracy_{name}.png"), dpi=300, bbox_inches='tight')
+    plt.show()
+    plt.close()

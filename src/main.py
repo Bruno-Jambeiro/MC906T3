@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from estruturas import LayerDense, FeatureExpansion, Relu, SoftmaxCrossEntropy, Model, SGD
-from plot_utils import plot_decision_boundary, plot_loss_curve, plot_internal_decision_boundries
+from plot_utils import plot_decision_boundary, plot_loss_curve, plot_internal_decision_boundries, plot_accuracy_curve
 from datasets import generate_datasets
 
 
@@ -10,7 +10,7 @@ from datasets import generate_datasets
 def test_model(model:Model, data_sets):
     for X_train, Y_train, X_test, Y_test, dataset_name in data_sets:
         model.clear()
-        train_losses, test_losses = model.train(
+        train_losses, test_losses, train_accs, test_accs = model.train(
             X_train,
             Y_train,
             X_test,
@@ -19,6 +19,7 @@ def test_model(model:Model, data_sets):
             batch_size=32,
         )
         plot_loss_curve(model, train_losses, test_losses, dataset_name)
+        plot_accuracy_curve(model, train_accs, test_accs, dataset_name)
         plot_decision_boundary(model, X_train, Y_train, X_test, Y_test, dataset_name)
         plot_internal_decision_boundries(model, X_train, Y_train, X_test, Y_test, dataset_name)
     

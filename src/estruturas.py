@@ -167,13 +167,22 @@ class Model:
         self.optimizer.update_weights(self.layers, self.loss.Ridge, self.loss.Lasso)
     def train(self, X_train, y_train, X_test=None, y_test=None, epochs = None, batch_size = None):
         train_losses = []
+        train_accs = []
         test_losses = [] if X_test is not None and y_test is not None else None
-        
+        test_accs = [] if X_test is not None and y_test is not None else None
+
+        # Função auxiliar para calcular acurácia
+        def calc_accuracy(y_pred, y_true):
+            predictions = np.argmax(y_pred, axis=1)
+            return np.mean(predictions == y_true)
+
         y_pred = self.forward(X_train)
         train_losses.append(self.loss.forward(y_pred, y_train, self))
+        train_accs.append(calc_accuracy(y_pred, y_train))
         if test_losses is not None:
             y_test_pred = self.forward(X_test)
             test_losses.append(self.loss.forward(y_test_pred, y_test, self))
+            test_accs.append(calc_accuracy(y_test_pred, y_test))
         
         for _ in range(epochs):
             for i in range(0, len(X_train), batch_size):
@@ -186,10 +195,12 @@ class Model:
                 self.update_weights()
             y_pred = self.forward(X_train)
             train_losses.append(self.loss.forward(y_pred, y_train, self))
+            train_accs.append(calc_accuracy(y_pred, y_train))
             if test_losses is not None:
                 y_test_pred = self.forward(X_test)
                 test_losses.append(self.loss.forward(y_test_pred, y_test, self))
-        return train_losses, test_losses
+                test_accs.append(calc_accuracy(y_test_pred, y_test))
+        return train_losses, test_losses, train_accs, test_accs
     def clear(self):
         for layer in self.layers:
             layer.clear_weights()
