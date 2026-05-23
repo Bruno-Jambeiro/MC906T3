@@ -193,3 +193,41 @@ class Model:
     def clear(self):
         for layer in self.layers:
             layer.clear_weights()
+
+        if hasattr(self.optimizer, 'velocities'):
+            self.optimizer.velocities = {}
+            
+        if hasattr(self.optimizer, 'm'):
+            self.optimizer.m = {}
+            self.optimizer.v = {}
+            self.optimizer.t = 0
+
+class SGDMomentum(Optimizer):
+    def __init__(self, learning_rate, beta=0.9):
+        self.learning_rate = learning_rate
+        self.beta = beta
+        # Dicionário para guardar as "velocidades" de cada camada pelo índice
+        self.velocities = {}
+        
+    def update_weights(self, layers, Ridge=0, Lasso=0):
+        for i, layer in enumerate(layers):
+            # Apenas camadas com pesos precisam ser atualizadas
+            if hasattr(layer, 'weights') and hasattr(layer, 'grad_weights'):
+                # Inicializa as velocidades com zero na primeira iteração
+                if i not in self.velocities:
+                    self.velocities[i] = {
+                        'w': np.zeros_like(layer.weights),
+                        'b': np.zeros_like(layer.biases)
+                    }
+                
+                # Resgata o gradiente atual e aplica as regularizações (L1/L2) já implementadas
+                grad_w = layer.grad_weights + 2 * Ridge * layer.weights + Lasso * np.sign(layer.weights)
+                grad_b = layer.grad_biases
+                
+                # 1. Calcula a nova velocidade (Momento)
+                self.velocities[i]['w'] = self.beta * self.velocities[i]['w'] + (1 - self.beta) * grad_w
+                self.velocities[i]['b'] = self.beta * self.velocities[i]['b'] + (1 - self.beta) * grad_b
+                
+                # 2. Atualiza os pesos reais da camada
+                layer.weights -= self.learning_rate * self.velocities[i]['w']
+                layer.biases -= self.learning_rate * self.velocities[i]['b']
