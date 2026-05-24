@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from estruturas import LayerDense, FeatureExpansion, Relu, SoftmaxCrossEntropy, Model, SGD
+from estruturas import LayerDense, FeatureExpansion, Relu, SoftmaxCrossEntropy, Model, SGD, SGDMomentum
 from plot_utils import plot_decision_boundary, plot_loss_curve, plot_internal_decision_boundries, plot_accuracy_curve
 from datasets import generate_datasets
 
@@ -26,13 +26,32 @@ def test_model(model:Model, data_sets):
 def define_models():
     models = []
 
-    modelo_simples = Model("Modelo_Simples", [LayerDense(2, 6, init="He"), Relu() ,LayerDense(6, 2, init="He")], SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    modelo_simples = Model(
+        "Modelo_Simples",
+        [LayerDense(2, 6, init="He"), Relu() ,LayerDense(6, 2, init="He")],
+        SoftmaxCrossEntropy(),
+        SGD(learning_rate=0.1)
+    )
     #ATENÇÃO, o retorno do modelo está em logits, então a função de perda já inclui a softmax.
     #O resultados podem não estar entre 0 e 1.
     models.append(modelo_simples)
-    modelo_expansivo = Model("Modelo_Expansivo",[FeatureExpansion(), LayerDense(4, 6, init="He"), Relu(), LayerDense(6, 2, init="He")], SoftmaxCrossEntropy(Ridge=2e-6), SGD(learning_rate=0.1))
 
+    modelo_expansivo = Model(
+        "Modelo_Expansivo",
+        [FeatureExpansion(), LayerDense(4, 6, init="He"), Relu(), LayerDense(6, 2, init="He")],
+        SoftmaxCrossEntropy(Ridge=2e-6),
+        SGD(learning_rate=0.1)
+    )
     models.append(modelo_expansivo)
+
+    modelo_momentum = Model(
+        "Modelo_Momentum", 
+        [LayerDense(2, 6), Relu(), LayerDense(6, 2)], 
+        SoftmaxCrossEntropy(), 
+        SGDMomentum(learning_rate=0.1, beta=0.9)
+    )
+    models.append(modelo_momentum)
+    
     return models
 
 def main():
