@@ -28,7 +28,7 @@ def define_models():
 
     modelo_simples = Model(
         "Modelo_Simples",
-        [LayerDense(2, 6), Relu() ,LayerDense(6, 2)],
+        [LayerDense(2, 6, init="He"), Relu() ,LayerDense(6, 2, init="He")],
         SoftmaxCrossEntropy(),
         SGD(learning_rate=0.1)
     )
@@ -38,7 +38,7 @@ def define_models():
 
     modelo_expansivo = Model(
         "Modelo_Expansivo",
-        [FeatureExpansion(), LayerDense(4, 6), Relu(), LayerDense(6, 2)],
+        [FeatureExpansion(), LayerDense(4, 6, init="He"), Relu(), LayerDense(6, 2, init="He")],
         SoftmaxCrossEntropy(Ridge=2e-6),
         SGD(learning_rate=0.1)
     )
