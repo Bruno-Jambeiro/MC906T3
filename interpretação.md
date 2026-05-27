@@ -1,0 +1,1 @@
+[Plot no Desmos](https://www.desmos.com/3d/1wvawg8ct6)
