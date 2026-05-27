@@ -33,7 +33,7 @@ class LayerDense(Layer):
         self.biases = np.zeros((1, output_size))
     def init_weights(self, init):
         if init == "Simple":
-            self.weights = np.random.randn(self.input_size, self.output_size) * 0.01
+            self.weights = np.random.randn(self.input_size, self.output_size) * 2
         elif init == "Xavier":
             # Inicialização de Xavier (Glorot) - Ideal para ativações como Tanh ou Sigmoid
             # Variância = 1 / input_size
