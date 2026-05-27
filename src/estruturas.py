@@ -137,7 +137,7 @@ class SGD(Optimizer):
 
 class ADAM(Optimizer):
     # Extra mencionado no pdf, interessante de se fazer depois para melhorar o desempenho do modelo.
-    def __init__(self, learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8):
+    def __init__(self, learning_rate, beta1, beta2, epsilon):
         self.learning_rate = learning_rate
         self.beta1 = beta1
         self.beta2 = beta2
@@ -145,40 +145,8 @@ class ADAM(Optimizer):
         self.m = {}
         self.v = {}
         self.t = 0
-
-    def update_weights(self, layers, Ridge=0, Lasso=0):
-        self.t += 1
-        beta1_t = 1 - self.beta1 ** self.t
-        beta2_t = 1 - self.beta2 ** self.t
-
-        for i, layer in enumerate(layers):
-            if hasattr(layer, 'weights') and hasattr(layer, 'grad_weights'):
-                if i not in self.m:
-                    self.m[i] = {
-                        'w': np.zeros_like(layer.weights),
-                        'b': np.zeros_like(layer.biases)
-                    }
-                    self.v[i] = {
-                        'w': np.zeros_like(layer.weights),
-                        'b': np.zeros_like(layer.biases)
-                    }
-
-                grad_w = layer.grad_weights + 2 * Ridge * layer.weights + Lasso * np.sign(layer.weights)
-                grad_b = layer.grad_biases
-
-                self.m[i]['w'] = self.beta1 * self.m[i]['w'] + (1 - self.beta1) * grad_w
-                self.m[i]['b'] = self.beta1 * self.m[i]['b'] + (1 - self.beta1) * grad_b
-
-                self.v[i]['w'] = self.beta2 * self.v[i]['w'] + (1 - self.beta2) * (grad_w ** 2)
-                self.v[i]['b'] = self.beta2 * self.v[i]['b'] + (1 - self.beta2) * (grad_b ** 2)
-
-                m_hat_w = self.m[i]['w'] / beta1_t
-                m_hat_b = self.m[i]['b'] / beta1_t
-                v_hat_w = self.v[i]['w'] / beta2_t
-                v_hat_b = self.v[i]['b'] / beta2_t
-
-                layer.weights -= self.learning_rate * m_hat_w / (np.sqrt(v_hat_w) + self.epsilon)
-                layer.biases -= self.learning_rate * m_hat_b / (np.sqrt(v_hat_b) + self.epsilon)
+    def update_weights(self, layers, Ridge=0, Lasso=0):   
+        raise NotImplementedError("Otimizador ADAM ainda não implementado.")
     
 class Model:
     def __init__(self, name: str, layers = [], loss = None, optimizer = None):
