@@ -51,14 +51,85 @@ def define_models():
         SGDMomentum(learning_rate=0.1, beta=0.9)
     )
     models.append(modelo_momentum)
-    
+
+    #definindo alguns modelos para avaliar o que acontece conforme a estrutura da rede neural muda
+    modelo_under = Model("Modelo_Underfitting",
+    [
+        LayerDense(2, 3, init="He"), 
+        Relu(), 
+        LayerDense(3, 2, init="He")
+    ],
+    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    models.append(modelo_under)
+
+    modelo_ideal = Model("Modelo_Ideal",
+    [
+        LayerDense(2, 6, init="He"), 
+        Relu(), 
+        LayerDense(6, 2, init="He")
+    ],
+    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    models.append(modelo_ideal)
+
+    modelo_over = Model("Modelo_Overfitting",
+    [
+        LayerDense(2, 16, init="He"), 
+        Relu(), 
+        LayerDense(16, 16, init="He"), 
+        Relu(), 
+        LayerDense(16, 2, init="He")
+    ],
+    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    models.append(modelo_over)
+
+    modelo_wide_shallow = Model("Modelo_Wide_Shallow1x20",
+    [
+        LayerDense(2, 20, init="He"), 
+        Relu(), 
+        LayerDense(20, 20, init="He"), 
+        Relu(), 
+        LayerDense(20, 2, init="He")
+    ],
+    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    models.append(modelo_wide_shallow)
+
+    modelo_balanced = Model("Modelo_Balanced2x10",
+    [
+        LayerDense(2, 10, init="He"), 
+        Relu(), 
+        LayerDense(10, 10, init="He"), 
+        Relu(),
+        LayerDense(10, 10, init="He"), 
+        Relu(), 
+        LayerDense(10, 2, init="He")
+    ],
+    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    models.append(modelo_balanced)
+
+    modelo_narrow_deep = Model("Modelo_Narrow_Deep4x5",
+    [
+        LayerDense(2, 5, init="He"), 
+        Relu(), 
+        LayerDense(5, 5, init="He"), 
+        Relu(),
+        LayerDense(5, 5, init="He"), 
+        Relu(), 
+        LayerDense(5, 5, init="He"), 
+        Relu(), 
+        LayerDense(5, 5, init="He"), 
+        Relu(), 
+        LayerDense(5, 2, init="He")
+    ],
+    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    models.append(modelo_narrow_deep)
+
     return models
 
 def main():
    
     models = define_models()
     full_data_sets = generate_datasets()
-    for i in range(len(models)):
-        test_model(models[i], full_data_sets)
+    for model in models:
+        test_model(model, full_data_sets)
 if __name__ == "__main__":
     main()
