@@ -49,11 +49,11 @@ def text_2d(text_line1="MC", text_line2="906", n_samples=500, noise=0.01, random
     try:
         os_name = platform.system()
         if os_name == "Windows":
-            font = ImageFont.truetype("arial.ttf", 320)
+            font = ImageFont.truetype("arial.ttf", 400)
         elif os_name == "Darwin": # macOS
-            font = ImageFont.truetype("Arial.ttf", 320)
+            font = ImageFont.truetype("Arial.ttf", 400)
         else: # Linux
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 320)
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 400)
     except OSError:
         print("AVISO CRÍTICO: Fonte TrueType não encontrada. O texto usará o fallback e ficará ilegível.")
         font = ImageFont.load_default()
@@ -61,13 +61,15 @@ def text_2d(text_line1="MC", text_line2="906", n_samples=500, noise=0.01, random
     # Desenhar primeira linha
     bbox1 = draw.textbbox((0, 0), text_line1, font=font)
     x1 = (width - (bbox1[2] - bbox1[0])) // 2
-    y1 = height // 4 - 120
+    y1 = height // 4 - (bbox1[3] - bbox1[1]) // 2
+    y1 = max(0, min(y1, height - (bbox1[3] - bbox1[1])))
     draw.text((x1, y1), text_line1, fill=0, font=font)
     
     # Desenhar segunda linha
     bbox2 = draw.textbbox((0, 0), text_line2, font=font)
     x2 = (width - (bbox2[2] - bbox2[0])) // 2
-    y2 = height * 3 // 4 - 120
+    y2 = height * 3 // 4 - (bbox2[3] - bbox2[1]) // 2 - 50
+    y2 = max(0, min(y2, height - (bbox2[3] - bbox2[1]) - 50))
     draw.text((x2, y2), text_line2, fill=0, font=font)
     
     img_array = np.array(img)
