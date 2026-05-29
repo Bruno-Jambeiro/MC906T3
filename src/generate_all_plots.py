@@ -4,6 +4,9 @@
 import matplotlib
 matplotlib.use('Agg')  # Use o backend 'Agg' para evitar problemas de exibição em ambientes sem suporte gráfico
 
-from main import main
-
-main()
+import main
+n = "u"
+while n not in ["S", "N"]:
+    n = input("Gostaria de Salvar a fronteiras internas? S/N: ").strip()
+main.PLOT_INTERNAL_BOUNDARIES = {"S": True, "N":False}[n]
+main.main()

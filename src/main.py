@@ -5,9 +5,10 @@ from estruturas import LayerDense, FeatureExpansion, Relu, SoftmaxCrossEntropy, 
 from plot_utils import plot_decision_boundary, plot_loss_curve, plot_internal_decision_boundries, plot_accuracy_curve
 from datasets import generate_datasets
 
-
+PLOT_INTERNAL_BOUNDARIES: bool = True
 
 def test_model(model:Model, data_sets):
+    global PLOT_INTERNAL_BOUNDRIES
     for X_train, Y_train, X_test, Y_test, dataset_name in data_sets:
         model.clear()
         train_losses, test_losses, train_accs, test_accs = model.train(
@@ -21,7 +22,10 @@ def test_model(model:Model, data_sets):
         plot_loss_curve(model, train_losses, test_losses, dataset_name)
         plot_accuracy_curve(model, train_accs, test_accs, dataset_name)
         plot_decision_boundary(model, X_train, Y_train, X_test, Y_test, dataset_name)
-        plot_internal_decision_boundries(model, X_train, Y_train, X_test, Y_test, dataset_name)
+        if (PLOT_INTERNAL_BOUNDARIES):
+            plot_internal_decision_boundries(model, X_train, Y_train, X_test, Y_test, dataset_name)
+        else:
+            print("Plot Internal Boundary Disabled")
     
 def define_models():
     models = []
