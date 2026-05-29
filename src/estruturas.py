@@ -20,9 +20,39 @@ class Layer(ABC):
         pass
 
 class Optimizer(ABC):
+    def __init__(self, learning_rate, scheduler=None):
+        self.learning_rate = learning_rate
+        self.initial_learning_rate = learning_rate
+        self.scheduler = scheduler
+
     @abstractmethod
     def update_weights(self, layers, Ridge=0, Lasso=0):
         pass
+
+    def step_scheduler(self, epoch):
+        if self.scheduler:
+            self.learning_rate = self.scheduler.step(self.initial_learning_rate, epoch)
+
+class LRScheduler(ABC):
+    @abstractmethod
+    def step(self, initial_lr, epoch):
+        pass
+
+class StepLR(LRScheduler):
+    def __init__(self, step_size, gamma=0.1):
+        self.step_size = step_size
+        self.gamma = gamma
+
+    def step(self, initial_lr, epoch):
+        exponent = epoch // self.step_size
+        return initial_lr * (self.gamma ** exponent)
+
+class ExponentialLR(LRScheduler):
+    def __init__(self, gamma=0.95):
+        self.gamma = gamma
+
+    def step(self, initial_lr, epoch):
+        return initial_lr * (self.gamma ** epoch)
 
 class LayerDense(Layer):
     def __init__(self, input_size, output_size, init = "Simple"):
@@ -129,16 +159,16 @@ class FeatureExpansion(Layer):
     
 
 class SGD(Optimizer):
-    def __init__(self, learning_rate):
-        self.learning_rate = learning_rate
+    def __init__(self, learning_rate, scheduler=None):
+        super().__init__(learning_rate, scheduler)
     def update_weights(self, layers, Ridge=0, Lasso=0):
         for layer in layers:
             layer.update_weights(self.learning_rate, Ridge, Lasso)
 
 class ADAM(Optimizer):
     # Extra mencionado no pdf, interessante de se fazer depois para melhorar o desempenho do modelo.
-    def __init__(self, learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8):
-        self.learning_rate = learning_rate
+    def __init__(self, learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8, scheduler=None):
+        super().__init__(learning_rate, scheduler)
         self.beta1 = beta1
         self.beta2 = beta2
         self.epsilon = epsilon
@@ -216,7 +246,7 @@ class Model:
             test_losses.append(self.loss.forward(y_test_pred, y_test, self))
             test_accs.append(calc_accuracy(y_test_pred, y_test))
         
-        for _ in range(epochs):
+        for epoch in range(1, epochs + 1):
             for i in range(0, len(X_train), batch_size):
                 X_batch = X_train[i:i+batch_size]
                 y_batch = y_train[i:i+batch_size]
@@ -225,6 +255,9 @@ class Model:
                 loss = self.loss.forward(y_pred, y_batch, self)
                 grad = self.backward_gradient(y_pred, y_batch)
                 self.update_weights()
+            
+            self.optimizer.step_scheduler(epoch)
+
             y_pred = self.forward(X_train)
             train_losses.append(self.loss.forward(y_pred, y_train, self))
             train_accs.append(calc_accuracy(y_pred, y_train))
@@ -237,6 +270,8 @@ class Model:
         for layer in self.layers:
             layer.clear_weights()
 
+        self.optimizer.learning_rate = self.optimizer.initial_learning_rate
+
         if hasattr(self.optimizer, 'velocities'):
             self.optimizer.velocities = {}
             
@@ -246,8 +281,8 @@ class Model:
             self.optimizer.t = 0
 
 class SGDMomentum(Optimizer):
-    def __init__(self, learning_rate, beta=0.9):
-        self.learning_rate = learning_rate
+    def __init__(self, learning_rate, beta=0.9, scheduler=None):
+        super().__init__(learning_rate, scheduler)
         self.beta = beta
         # Dicionário para guardar as "velocidades" de cada camada pelo índice
         self.velocities = {}
@@ -274,3 +309,4 @@ class SGDMomentum(Optimizer):
                 # 2. Atualiza os pesos reais da camada
                 layer.weights -= self.learning_rate * self.velocities[i]['w']
                 layer.biases -= self.learning_rate * self.velocities[i]['b']
+

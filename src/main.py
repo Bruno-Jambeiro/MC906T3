@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from estruturas import LayerDense, FeatureExpansion, Relu, SoftmaxCrossEntropy, Model, SGD, SGDMomentum
+from estruturas import LayerDense, FeatureExpansion, Relu, SoftmaxCrossEntropy, Model, SGD, SGDMomentum, ADAM, StepLR, ExponentialLR
 from plot_utils import plot_decision_boundary, plot_loss_curve, plot_internal_decision_boundries, plot_accuracy_curve
 from datasets import generate_datasets
 
@@ -52,7 +52,7 @@ def define_models():
         "Modelo_Momentum", 
         [LayerDense(2, 6), Relu(), LayerDense(6, 2)], 
         SoftmaxCrossEntropy(), 
-        SGDMomentum(learning_rate=0.1, beta=0.9)
+        SGDMomentum(learning_rate=0.1, beta=0.9, scheduler=StepLR(step_size=200, gamma=1.0))
     )
     models.append(modelo_momentum)
 
@@ -94,7 +94,7 @@ def define_models():
         Relu(), 
         LayerDense(20, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5)))
     models.append(modelo_wide_shallow)
 
     modelo_balanced = Model("Modelo_Balanced2x10",
@@ -107,7 +107,7 @@ def define_models():
         Relu(), 
         LayerDense(10, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5)))
     models.append(modelo_balanced)
 
     modelo_narrow_deep = Model("Modelo_Narrow_Deep4x5",
@@ -124,7 +124,7 @@ def define_models():
         Relu(), 
         LayerDense(5, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.005, scheduler=StepLR(step_size=200, gamma=0.5)))
     models.append(modelo_narrow_deep)
 
     return models
