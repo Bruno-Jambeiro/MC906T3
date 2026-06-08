@@ -41,7 +41,7 @@ def plot_decision_boundary(model: Model, X_train: np.ndarray, y_train: np.ndarra
     plt.ylim(y_min, y_max)
     plt.legend()
     
-    SAVE_DIR = os.path.join(PLOTS_DIR, data_name)
+    SAVE_DIR = os.path.join(PLOTS_DIR, data_name, name)
     os.makedirs(SAVE_DIR, exist_ok=True)
     plt.savefig(os.path.join(SAVE_DIR,f"Fronteira_{name}.png"), dpi=300, bbox_inches='tight')
     plt.show()
@@ -121,9 +121,9 @@ def plot_internal_decision_boundries(model: Model, X_train: np.ndarray, y_train:
     plt.suptitle(f'Fronteiras Internas por Neurônio — Modelo {model.name}', fontsize=12)
     plt.tight_layout(rect=[0, 0, 1, 0.91])
 
-    SAVE_DIR = os.path.join(PLOTS_DIR, data_name or model.name)
+    SAVE_DIR = os.path.join(PLOTS_DIR, data_name, model.name)
     os.makedirs(SAVE_DIR, exist_ok=True)
-    plt.savefig(os.path.join(SAVE_DIR, f'InternalBoundaries_{model.name}.png'), dpi=1000, bbox_inches='tight')
+    plt.savefig(os.path.join(SAVE_DIR, f'InternalBoundaries_{model.name}.png'), dpi=100, bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -150,7 +150,7 @@ def plot_loss_curve(model, train_losses, test_losses=None, data_name: str = ""):
     plt.ylabel("Perda")
     plt.legend()
     
-    SAVE_DIR = os.path.join(PLOTS_DIR, data_name)
+    SAVE_DIR = os.path.join(PLOTS_DIR, data_name, name)
     os.makedirs(SAVE_DIR, exist_ok=True)
     plt.savefig(os.path.join(SAVE_DIR,f"Losses_{name}.png"), dpi=300, bbox_inches='tight')
     plt.show()
@@ -178,7 +178,7 @@ def plot_accuracy_curve(model, train_accs, test_accs=None, data_name: str = ""):
     plt.ylabel("Acurácia")
     plt.legend()
     
-    SAVE_DIR = os.path.join(PLOTS_DIR, data_name)
+    SAVE_DIR = os.path.join(PLOTS_DIR, data_name, name)
     os.makedirs(SAVE_DIR, exist_ok=True)
     plt.savefig(os.path.join(SAVE_DIR, f"Accuracy_{name}.png"), dpi=300, bbox_inches='tight')
     plt.show()

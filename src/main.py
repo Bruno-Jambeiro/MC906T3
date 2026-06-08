@@ -16,7 +16,7 @@ def test_model(model:Model, data_sets):
             Y_train,
             X_test,
             Y_test,
-            epochs=1000,
+            epochs=3000,
             batch_size=32,
         )
         plot_loss_curve(model, train_losses, test_losses, dataset_name)
@@ -56,35 +56,10 @@ def define_models():
     )
     models.append(modelo_momentum)
 
-    #definindo alguns modelos para avaliar o que acontece conforme a estrutura da rede neural muda
-    modelo_under = Model("Modelo_Underfitting",
-    [
-        LayerDense(2, 3, init="He"), 
-        Relu(), 
-        LayerDense(3, 2, init="He")
-    ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    models.append(modelo_under)
+    return models
 
-    modelo_ideal = Model("Modelo_Ideal",
-    [
-        LayerDense(2, 6, init="He"), 
-        Relu(), 
-        LayerDense(6, 2, init="He")
-    ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    models.append(modelo_ideal)
-
-    modelo_over = Model("Modelo_Overfitting",
-    [
-        LayerDense(2, 16, init="He"), 
-        Relu(), 
-        LayerDense(16, 16, init="He"), 
-        Relu(), 
-        LayerDense(16, 2, init="He")
-    ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    models.append(modelo_over)
+def define_experimental_models():
+    models = []
 
     modelo_wide_shallow = Model("Modelo_Wide_Shallow1x20",
     [
@@ -124,14 +99,14 @@ def define_models():
         Relu(), 
         LayerDense(5, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), ADAM(learning_rate=0.005, scheduler=StepLR(step_size=200, gamma=0.5)))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5)))
     models.append(modelo_narrow_deep)
 
     return models
 
 def main():
    
-    models = define_models()
+    models = define_experimental_models()
     full_data_sets = generate_datasets()
     for model in models:
         test_model(model, full_data_sets)

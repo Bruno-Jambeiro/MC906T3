@@ -1,0 +1,68 @@
+anotações do primeiro teste
+
+usei todos os datasets
+
+todos modelos foram executados com:
+SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5))
+
+observações sobre o modelo balanced_2x10:
+    CIRCLES
+    - o modelo atingiu acurácia máxima em testes no início do treino (~época 100), que depois decaiu
+        > indicativo de overfitting (vou seguir essa hipotese primeiro)
+        - talvez os dados de teste não estejam representativos do dataset, visto que a acurácia de 100% foi atingida no teste, mas não no treino
+    - a fronteira também sugere overfitting, já que há espinhos laranjas em direção aos outliers de treino em torno do círculo
+    - as curvas de loss também sugerem overfitting, visto que a loss do treino continua caindo mas a de teste começa a subir (~época 100)
+
+    MC906
+    - os gráficos indicam que o modelo não teve tempo o suficiente para aprender, pois ambas as curvas de loss ainda estavam descendo
+
+    MOONS
+    - aprendeu perfeitamente, chegou em accuracy de 100% em treino e em teste e permaneceu
+    - a curva de loss mostra que o modelo foi ficando cada vez mais confiante em suas respostas que já estavam corretas
+        - não há sinais de overfitting
+    
+    SPIRAL
+    - nota-se visualmente que as fronteiras não demarcam uma espiral
+    - curvas de loss sugerem que o modelo precisa de mais épocas para aprender
+
+observações sobre o modelo narrow_deep_4x5:
+    note que nas tres fronteiras há algumas regiões "mortas", ou seja, sem uma cor claramente definida. isso sugere que as RELUs estão zerando e matando o sinal que chegaria no final. isso provavelmente ocorre porque a rede ficou estreita demais.
+
+    CIRCLES
+    - espinhos de overfitting na fronteira
+        - talvez nao sejam espinhos de overfitting, mas a geometria da fronteira resultante da rede mais profunda
+    - curva de loss não sugere overfitting
+        - parece ter começado um platô
+
+    MC906
+    - arquitetura da rede neural simplesmente inadequada para esse problema
+    - fronteira completamente errada
+    - acurácia e loss indicam estagnação no aprendizado
+
+    MOONS
+    - fronteira completamente errada
+        - modelo parece incapaz de gerar as curvas geométricas necessárias
+    - acurácia e loss indicam overfitting
+    
+    SPIRAL
+    - aprendizado parece ter estagnado, pelos plots de loss e accuracy
+    - fronteira não demarca as espirais completamente
+
+observações sobre o modelo wide_shallow_1x20:
+    CIRCLES
+    - accuracy e loss indicam um leve overfitting
+        - também observado em pequenos espinhos nas fronteiras
+    - visualmente foi o que mais se aproximou de um circulo
+
+    MC906
+    - modelo parece nao ter tido tempo suficiente pra aprender
+
+    MOONS
+    - accuracy chegou a 100%
+    - loss ZEROU
+    - fronteira ficou perfeita e suave
+
+    SPIRAL
+    - loss indica que o modelo estava aprendendo rápido quando o treinamento se encerrou
+    - fronteiras sugerem que o modelo ficou preso em ótimos locais
+        - ex: o braço laranja à esquerda, que cruza a camada mais externa da espiral, atravessa uma parte com pontos azuis e depois chega novamente em pontos laranjas é claramente um ótimo local. para que o modelo aprendesse corretamente o padrão da espiral, seria necessário alterar drasticamente muitas das seções de retas

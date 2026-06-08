@@ -1,0 +1,32 @@
+anotações do terceiro teste
+
+usarei apenas os datasets spiral e MC906 e os modelos balanced_2x10 e wide_shallow_1x20. essa combinação de dados + modelos parecia precisar de mais tempo de treinamento, portanto vou aumentar o número de épocas. estou excluindo o modelo narrow_deep_4x5 por ter se mostrado inadequado nesses datasets, além de apresentar estagnação no aprendizado.
+
+exec1: com ridge = 0.001 nos modelos
+exec2: sem ridge
+exec3: ridge = 0.0001, apenas no balanced_2x10 no dataset spiral
+
+balanced_2x10:
+    MC906
+    - a principio rodei com ridge = 0.001, mas isso piorou a fronteira
+    - sem ridge continuou similar
+        - essa invariância somada ao plot das internal boundaries sugere que faltam neurônios para conseguir aprender todo o padrão. loss estagnada corrobora a hipotese
+
+    SPIRAL
+    - o maior número de épocas melhorou muito a fronteira. 3000 épocas parecem ter sido suficiente para que o aprendizado estagnasse
+    - a principio rodei com ridge = 0.001. talvez isso esteja impedindo a fronteira de se ajustar mais à forma do espiral?
+    - ao remover o ridge as  fronteiras se ajustaram quase perfeitamente aos pontos, porém o fizeram "roubando", ignorando a forma da espiral
+        - talvez seja necessário diminuir o ridge, ao inves de remover?
+            - a diminuição do ridge fez a fronteira se ajustar melhor aos pontos de treino sem gerar overfitting. o formato não está perfeito porque os pontos do dataset não estão representando bem a espiral completa
+
+wide_shallow_1x20:
+    MC906
+    - a principio rodei com ridge = 0.001, mas isso piorou a fronteira
+    - remover o ridge melhorou a fronteira na parte superior "MC", mas piorou na parte inferior "906"
+        - loss estagnou, sugerindo que faltam neuronios na rede pra aprender todo o padrão
+    
+    SPIRAL
+    - aumentar o número de épocas nao mudou muito a fronteira. o modelo provavelmente está preso em um ótimo local
+        - parece ter apenas ficado mais confiante no resultado que já tinha
+    - ao remover o ridge o modelo conseguiu escapar de alguns ótimos locais, mas parece ter caído em outros
+    

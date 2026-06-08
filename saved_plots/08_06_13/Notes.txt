@@ -1,0 +1,14 @@
+anotações do segundo teste
+
+usei apenas o dataset circles
+
+adicionei Ridge a todos os modelos e alterei as épocas de treinamento de 1000 pra 3000
+
+    balanced_2x10 (Ridge=0.01)
+    - o Ridge conseguiu efetivamente remover os espinhos que surgiam
+
+    narrow_deep_4x5 (Ridge=0.001)
+    - o Ridge conseguiu efetivamente remover os espinhos que surgiam
+
+    wide_shallow_1x20 (Ridge=0.001)
+    - nao houveram grandes mudanças. alguns espinhos que já eram pequenos diminuiram
