@@ -121,9 +121,9 @@ def plot_internal_decision_boundries(model: Model, X_train: np.ndarray, y_train:
     plt.suptitle(f'Fronteiras Internas por Neurônio — Modelo {model.name}', fontsize=12)
     plt.tight_layout(rect=[0, 0, 1, 0.91])
 
-    SAVE_DIR = os.path.join(PLOTS_DIR, data_name or model.name)
+    SAVE_DIR = os.path.join(PLOTS_DIR, data_name, model.name)
     os.makedirs(SAVE_DIR, exist_ok=True)
-    plt.savefig(os.path.join(SAVE_DIR, f'InternalBoundaries_{model.name}.png'), dpi=1000, bbox_inches='tight')
+    plt.savefig(os.path.join(SAVE_DIR, f'InternalBoundaries_{model.name}.png'), dpi=100, bbox_inches='tight')
     plt.show()
     plt.close()
 

@@ -1,3 +1,7 @@
+anotações do primeiro teste
+
+usei todos os datasets
+
 todos modelos foram executados com:
 SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5))
 
