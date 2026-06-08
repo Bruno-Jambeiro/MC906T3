@@ -16,7 +16,7 @@ def test_model(model:Model, data_sets):
             Y_train,
             X_test,
             Y_test,
-            epochs=1000,
+            epochs=3000,
             batch_size=32,
         )
         plot_loss_curve(model, train_losses, test_losses, dataset_name)
@@ -60,36 +60,6 @@ def define_models():
 
 def define_experimental_models():
     models = []
-
-    #definindo alguns modelos para avaliar o que acontece conforme a estrutura da rede neural muda
-    modelo_under = Model("Modelo_Underfitting",
-    [
-        LayerDense(2, 3, init="He"), 
-        Relu(), 
-        LayerDense(3, 2, init="He")
-    ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    # models.append(modelo_under)
-
-    modelo_ideal = Model("Modelo_Ideal",
-    [
-        LayerDense(2, 6, init="He"), 
-        Relu(), 
-        LayerDense(6, 2, init="He")
-    ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    # models.append(modelo_ideal)
-
-    modelo_over = Model("Modelo_Overfitting",
-    [
-        LayerDense(2, 16, init="He"), 
-        Relu(), 
-        LayerDense(16, 16, init="He"), 
-        Relu(), 
-        LayerDense(16, 2, init="He")
-    ],
-    SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    # models.append(modelo_over)
 
     modelo_wide_shallow = Model("Modelo_Wide_Shallow1x20",
     [
