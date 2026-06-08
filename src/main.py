@@ -56,6 +56,11 @@ def define_models():
     )
     models.append(modelo_momentum)
 
+    return models
+
+def define_experimental_models():
+    models = []
+
     #definindo alguns modelos para avaliar o que acontece conforme a estrutura da rede neural muda
     modelo_under = Model("Modelo_Underfitting",
     [
@@ -64,7 +69,7 @@ def define_models():
         LayerDense(3, 2, init="He")
     ],
     SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    models.append(modelo_under)
+    # models.append(modelo_under)
 
     modelo_ideal = Model("Modelo_Ideal",
     [
@@ -73,7 +78,7 @@ def define_models():
         LayerDense(6, 2, init="He")
     ],
     SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    models.append(modelo_ideal)
+    # models.append(modelo_ideal)
 
     modelo_over = Model("Modelo_Overfitting",
     [
@@ -84,7 +89,7 @@ def define_models():
         LayerDense(16, 2, init="He")
     ],
     SoftmaxCrossEntropy(), SGD(learning_rate=0.1))
-    models.append(modelo_over)
+    # models.append(modelo_over)
 
     modelo_wide_shallow = Model("Modelo_Wide_Shallow1x20",
     [
@@ -124,14 +129,14 @@ def define_models():
         Relu(), 
         LayerDense(5, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), ADAM(learning_rate=0.005, scheduler=StepLR(step_size=200, gamma=0.5)))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5)))
     models.append(modelo_narrow_deep)
 
     return models
 
 def main():
    
-    models = define_models()
+    models = define_experimental_models()
     full_data_sets = generate_datasets()
     for model in models:
         test_model(model, full_data_sets)
