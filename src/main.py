@@ -107,7 +107,7 @@ def define_experimental_models():
         Relu(), 
         LayerDense(10, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=500, gamma=0.5)))
+    SoftmaxCrossEntropy(Ridge=0.01), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=500, gamma=0.5)))
     models.append(modelo_balanced)
 
     modelo_narrow_deep = Model("Modelo_Narrow_Deep4x5",
@@ -124,7 +124,7 @@ def define_experimental_models():
         Relu(), 
         LayerDense(5, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=500, gamma=0.5)))
+    SoftmaxCrossEntropy(Ridge=0.001), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=500, gamma=0.5)))
     models.append(modelo_narrow_deep)
 
     return models
