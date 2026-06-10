@@ -1,0 +1,2 @@
+Train_last_accuracy: 0.789474
+Test_last_accuracy: 0.720000
