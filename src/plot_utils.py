@@ -181,6 +181,29 @@ def plot_accuracy_curve(model, train_accs, test_accs=None, data_name: str = ""):
     SAVE_DIR = os.path.join(PLOTS_DIR, data_name, name)
     os.makedirs(SAVE_DIR, exist_ok=True)
     plt.savefig(os.path.join(SAVE_DIR, f"Accuracy_{name}.png"), dpi=300, bbox_inches='tight')
+
+    # Salva um resumo em texto com as últimas acurácias de treino e teste
+    try:
+        last_train = float(train_accs[-1]) if len(train_accs) > 0 else float('nan')
+    except Exception:
+        last_train = float('nan')
+
+    if test_accs is not None and len(test_accs) > 0:
+        try:
+            last_test = float(test_accs[-1])
+        except Exception:
+            last_test = float('nan')
+    else:
+        last_test = None
+
+    summary_path = os.path.join(SAVE_DIR, f'Accuracy_summary_{name}.txt')
+    with open(summary_path, 'w') as f:
+        f.write(f'Train_last_accuracy: {last_train:.6f}\n')
+        if last_test is None:
+            f.write('Test_last_accuracy: N/A\n')
+        else:
+            f.write(f'Test_last_accuracy: {last_test:.6f}\n')
+
     plt.show()
     plt.close()
 
