@@ -77,7 +77,7 @@ def define_models():
         "Modelo_Momentum", 
         [LayerDense(2, 6), Relu(), LayerDense(6, 2)], 
         SoftmaxCrossEntropy(), 
-        SGDMomentum(learning_rate=0.1, beta=0.9, scheduler=StepLR(step_size=200, gamma=1.0))
+        SGDMomentum(learning_rate=0.1, beta=0.9, scheduler=StepLR(step_size=500, gamma=1.0))
     )
     models.append(modelo_momentum)
 
@@ -94,7 +94,7 @@ def define_experimental_models():
         Relu(), 
         LayerDense(20, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5)))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=500, gamma=0.5)))
     models.append(modelo_wide_shallow)
 
     modelo_balanced = Model("Modelo_Balanced2x10",
@@ -107,7 +107,7 @@ def define_experimental_models():
         Relu(), 
         LayerDense(10, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5)))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=500, gamma=0.5)))
     models.append(modelo_balanced)
 
     modelo_narrow_deep = Model("Modelo_Narrow_Deep4x5",
@@ -124,7 +124,7 @@ def define_experimental_models():
         Relu(), 
         LayerDense(5, 2, init="He")
     ],
-    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=200, gamma=0.5)))
+    SoftmaxCrossEntropy(), ADAM(learning_rate=0.001, scheduler=StepLR(step_size=500, gamma=0.5)))
     models.append(modelo_narrow_deep)
 
     return models
