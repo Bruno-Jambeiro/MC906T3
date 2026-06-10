@@ -183,3 +183,82 @@ def plot_accuracy_curve(model, train_accs, test_accs=None, data_name: str = ""):
     plt.savefig(os.path.join(SAVE_DIR, f"Accuracy_{name}.png"), dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
+
+
+def softmax_probs(logits):
+    """Estabiliza e calcula a probabilidade (mesma lógica da sua Loss)."""
+    exp_scores = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+    return exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
+
+def plot_neuron_ablation_tv(model, X, y=None, layer_index=None, neuron_index=None, dataset_name=None):
+    """
+    Gera um Heatmap da TV Distance mostrando a região de responsabilidade 
+    de um neurônio específico, sem modificar a estrutura do modelo.
+    """
+    # 1. Definir os limites do Grid com base nos dados (similar ao seu plot_decision_boundary)
+    x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
+    y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.05),
+                         np.arange(y_min, y_max, 0.05))
+    grid = np.c_[xx.ravel(), yy.ravel()]
+
+    # 2. Obter as probabilidades do modelo INTACTO (Baseline)
+    logits_orig = model.forward(grid)
+    P_orig = softmax_probs(logits_orig) # Shape: (N_pontos, 2 classes)
+
+    # 3. Acessar a camada alvo (precisa ser uma LayerDense)
+    target_layer = model.layers[layer_index]
+    if not hasattr(target_layer, 'weights'):
+        raise ValueError("A camada especificada não possui pesos (não é LayerDense).")
+
+    # 4. CIRURGIA DE ABLAÇÃO (Backup -> Zerar -> Prever -> Restaurar)
+    # Fazer backup físico (copy) para não perder os ponteiros
+    w_backup = np.copy(target_layer.weights[:, neuron_index])
+    b_backup = np.copy(target_layer.biases[0, neuron_index])
+
+    try:
+        # Forçar a morte do neurônio
+        target_layer.weights[:, neuron_index] = 0
+        target_layer.biases[0, neuron_index] = 0
+
+        # Obter probabilidades do modelo ABLATADO
+        logits_abl = model.forward(grid)
+        P_abl = softmax_probs(logits_abl)
+
+    finally:
+        # Garantir a restauração incondicional dos pesos originais
+        target_layer.weights[:, neuron_index] = w_backup
+        target_layer.biases[0, neuron_index] = b_backup
+
+    # 5. Calcular a Distância de Variação Total (TV Distance)
+    # TV = 1/2 * soma_sobre_classes( | P_orig - P_abl | )
+    D_TV = 0.5 * np.sum(np.abs(P_orig - P_abl), axis=1)
+    D_TV = D_TV.reshape(xx.shape)
+
+    # 6. Plotar o Heatmap
+    plt.figure(figsize=(8, 6))
+    # Usamos o colormap 'Reds'. Branco = 0 deformação, Vermelho Escuro = alta deformação 
+    contour = plt.contourf(xx, yy, D_TV, levels=20, cmap='Reds', vmin=0.0, vmax=1.0)
+    plt.colorbar(contour, label='TV Distance (Degradação da Probabilidade)')
+    
+    # Plotar o dataset em background com transparência para dar contexto espacial
+    # Se labels (`y`) forem fornecidas, colorimos por classe; caso contrário,
+    # usamos as predições do modelo intacto para inferir a classe.
+    if y is None:
+        inferred_y = np.argmax(P_orig, axis=1)
+    else:
+        inferred_y = np.ravel(y)
+
+    # Usar azul para a classe 0 e laranja para a classe 1
+    class_cmap = LinearSegmentedColormap.from_list("BlueOrangeClasses", ["#4B8BBE", "#F29D4B"])
+    plt.scatter(X[:, 0], X[:, 1], c=inferred_y, cmap=class_cmap, edgecolors='k', alpha=0.3, s=20)
+    
+    plt.title(f'Ablação: Camada {layer_index}, Neurônio {neuron_index}\n{model.name} - {dataset_name}')
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    
+    SAVE_DIR = os.path.join(PLOTS_DIR, dataset_name, model.name, "Ablation")
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    plt.savefig(os.path.join(SAVE_DIR, f'Ablação:Camada_{layer_index}_N{neuron_index}_{model.name}.png'), dpi=300, bbox_inches='tight')
+    plt.show()
+    plt.close()

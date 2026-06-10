@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from estruturas import LayerDense, FeatureExpansion, Relu, SoftmaxCrossEntropy, Model, SGD, SGDMomentum, ADAM, StepLR, ExponentialLR
-from plot_utils import plot_decision_boundary, plot_loss_curve, plot_internal_decision_boundries, plot_accuracy_curve
+from plot_utils import plot_decision_boundary, plot_loss_curve, plot_internal_decision_boundries, plot_accuracy_curve, plot_neuron_ablation_tv
 from datasets import generate_datasets
 
 PLOT_INTERNAL_BOUNDARIES: bool = True
@@ -24,6 +24,30 @@ def test_model(model:Model, data_sets):
         plot_decision_boundary(model, X_train, Y_train, X_test, Y_test, dataset_name)
         if (PLOT_INTERNAL_BOUNDARIES):
             plot_internal_decision_boundries(model, X_train, Y_train, X_test, Y_test, dataset_name)
+            
+            for layer_index, layer in enumerate(model.layers):
+                # A ablação só faz sentido em camadas que possuem pesos e vieses (LayerDense)
+                if hasattr(layer, 'weights'):
+                    
+                    # Descomente o bloco abaixo se NÃO quiser ablatar a última camada (os 2 neurônios de saída das classes).
+                    # Ablatar a última camada geralmente não traz informações sobre representação interna.
+                    # if layer_index == len(model.layers) - 1:
+                    #     continue
+                    
+                    num_neurons = layer.output_size
+                    for neuron_index in range(num_neurons):
+                        print(f"  -> Processando e salvando: Camada {layer_index}, Neurônio {neuron_index}/{num_neurons-1}")
+                        
+                        # Certifique-se de que a função abaixo esteja importada no início do main.py
+                        # (ex: from plot_utils import plot_neuron_ablation_tv)
+                        plot_neuron_ablation_tv(
+                            model=model, 
+                            X=X_train, # Usamos o X_train para definir os limites do grid 2D
+                            y=Y_train,
+                            layer_index=layer_index, 
+                            neuron_index=neuron_index, 
+                            dataset_name=dataset_name
+                        )
         else:
             print("Plot Internal Boundary Disabled")
     
@@ -36,8 +60,9 @@ def define_models():
         SoftmaxCrossEntropy(),
         SGD(learning_rate=0.1)
     )
-    #ATENÇÃO, o retorno do modelo está em logits, então a função de perda já inclui a softmax.
-    #O resultados podem não estar entre 0 e 1.
+    # #ATENÇÃO, o retorno do modelo está em logits, então a função de perda já inclui a softmax.
+    # #O resultados podem não estar entre 0 e 1.
+    # models.append(modelo_simples)
     models.append(modelo_simples)
 
     modelo_expansivo = Model(
@@ -106,9 +131,10 @@ def define_experimental_models():
 
 def main():
    
-    models = define_experimental_models()
+    models = define_models() + define_experimental_models()
     full_data_sets = generate_datasets()
     for model in models:
+        print(f"Treinando e avaliando o modelo: {model.name}")
         test_model(model, full_data_sets)
 if __name__ == "__main__":
     main()
